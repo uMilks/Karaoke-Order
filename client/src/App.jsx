@@ -1,9 +1,9 @@
-import HomePage from "./pages/HomePage";
+import SessionPage from "./pages/SessionPage";
 
 export default function Square() {
   return (
     <>
-      <HomePage />
+      <SessionPage />
     </>
   );
 }

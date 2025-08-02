@@ -9,12 +9,12 @@ export default function RemoveSinger({singerList, removeSinger, removeSelf}) {
         if (newName) {setSingerName(newName)}
     }
 
-    const checkSinger = () => {
-        if (singerName) {
-            removeSinger(singerName)
-            removeSelf()
-        } else {
+    const checkSinger = async () => {
+        if (!singerName) {
             setWarning('Insira um Cantor.')
+        } else {
+            const result = await removeSinger(singerName)
+            result == "Sucesso ao remover cantor." ? removeSelf() : setWarning(result)
         }
     }
 
@@ -28,15 +28,15 @@ export default function RemoveSinger({singerList, removeSinger, removeSelf}) {
 
     return (
         <div className="background-update">
-            <div className="dark-translucid-background background-update"></div>
+            <div className="dark-translucid-background background-update" onClick={removeSelf}></div>
             <div className="remove-singer">
                 <button onClick={removeSelf} className="x-button">X</button>
                 <br></br>
-                <label>Nome do Cantor:</label>
+                <label>Nome do Cantor: </label>
                 <select id="singers" onBlur={handleOnBlur}>
                     {createOptions()}
                 </select>
-                <p style={{color: 'red'}}>{warning}</p>
+                <br/> <br/>
                 <button onClick={checkSinger}>Enviar</button>
             </div>
         </div>

@@ -74,7 +74,7 @@ export default function AddMusic({apiKey, setMusic, removeSelf, singerList, sing
 
     return (
         <div className="background-update">
-            <div className="dark-translucid-background background-update"></div>
+            <div className="dark-translucid-background background-update" onClick={removeSelf}></div>
             <div className="add-music">
                 <button onClick={removeSelf} className="x-button">X</button>
                 <p>Nome do vídeo: {videoData.title ? videoData.title : 'Vídeo desconhecido'}</p>

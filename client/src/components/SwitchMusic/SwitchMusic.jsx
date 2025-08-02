@@ -18,15 +18,15 @@ export default function SwitchMusic({musicsLength, switchMusic, removeSelf}) {
         setMusicIndexes(newIndexes)
     }
 
-    const checkMusic = () => {
+    const checkMusic = async () => {
         try {
             let newIndexOne = parseInt(musicIndexes[0])
             let newIndexTwo = parseInt(musicIndexes[1])
             if ((newIndexOne > musicsLength || newIndexOne < 1 || isNaN(newIndexOne)) || (newIndexTwo > musicsLength || newIndexTwo < 1 || isNaN(newIndexTwo))) {
                 throw RangeError
             }
-            switchMusic(newIndexOne-1, newIndexTwo-1)
-            removeSelf()
+            const result = await switchMusic(newIndexOne-1, newIndexTwo-1)
+            result == "Sucesso ao alterar ordem." ? removeSelf() : setWarning(result)
         } catch (error) {
             console.error(error)
             setWarning('Insira números válidos.')
@@ -35,7 +35,7 @@ export default function SwitchMusic({musicsLength, switchMusic, removeSelf}) {
 
     return (
         <div className="background-update">
-            <div className="dark-translucid-background background-update"></div>
+            <div className="dark-translucid-background background-update" onClick={removeSelf}></div>
             <div className="switch-music">
                 <button onClick={removeSelf} className="x-button">X</button>
                 <br></br>

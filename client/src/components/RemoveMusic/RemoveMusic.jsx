@@ -9,14 +9,14 @@ export default function RemoveMusic({musicsLength, removeMusic, removeSelf}) {
         setMusicIndex(newIndex)
     }
 
-    const checkMusic = () => {
+    const checkMusic = async () => {
         try {
             let newIndex = parseInt(musicIndex)
             if (newIndex > musicsLength || newIndex < 1 || isNaN(newIndex)) {
                 throw RangeError
             }
-            removeMusic(newIndex-1)
-            removeSelf()
+            const result = await removeMusic(newIndex-1)
+            result == "Sucesso ao remover música." ? removeSelf() : setWarning(result)
         } catch (error) {
             setWarning('Insira um número válido.')
         }
@@ -24,7 +24,7 @@ export default function RemoveMusic({musicsLength, removeMusic, removeSelf}) {
 
     return (
         <div className="background-update">
-            <div className="dark-translucid-background background-update"></div>
+            <div className="dark-translucid-background background-update" onClick={removeSelf}></div>
             <div className="remove-singer">
                 <button onClick={removeSelf} className="x-button">X</button>
                 <br></br>

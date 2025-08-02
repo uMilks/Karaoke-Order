@@ -1,10 +1,198 @@
+html {
+  height: 100%;
+}
+
 body {
+  min-height: 100vh;
   font-family: sans-serif;
   padding: 0;
   margin: 0;
   top: 0px;
   background-color:rgb(8, 6, 26);;
   color: rgb(213, 206, 233);
+}
+
+button {
+  background-color: rgb(170, 157, 207);
+  border-radius: 5px;
+}
+
+main {
+  display: flex;
+  position: absolute;
+  top: 100px;
+  padding-bottom: 100px;
+}
+
+nav {
+  position: fixed;
+  top: 0;
+  height: 100px;
+  background-color: rgb(0, 0, 0);
+  display: flex;
+  width: 100%;
+  z-index: 5;
+}
+
+.home-page {
+  width: 100%;
+  height: calc(100% - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.session-page {
+  display: flex;
+  position: absolute;
+  top: 100px;
+  padding-bottom: 100px;
+  min-height: calc(100% - 200px);
+}
+
+hr {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+@media (width >= 850px) {
+ 
+  .session-button {
+    font-family: helvetica;
+    font-size: 100%;
+    color: white;
+    width: 10%;
+    height: 50px;
+    border: 3px, solid, rgb(213, 206, 233);
+    margin: 0 1% 0 1%;
+  }
+
+  .enter-session {
+    margin: 5%;
+    width: 35%;
+    height: 200px;
+    background-color: rgb(7, 0, 53);
+    border: 5px, solid, rgb(213, 206, 233);
+    padding: 1%;
+    border-radius: 25px;
+  }
+}
+
+@media (width < 850px) {
+
+  .session-button {
+    font-family: helvetica;
+    font-size: 100%;
+    color: white;
+    width: 100px;
+    height: 50px;
+    border: 3px, solid, rgb(213, 206, 233);
+    margin: 0 1% 0 1%;
+  }
+
+  .enter-session {
+    margin: 5%;
+    width: 250px;
+    height: 200px;
+    background-color: rgb(7, 0, 53);
+    border: 5px, solid, rgb(213, 206, 233);
+    padding: 3%;
+    border-radius: 25px;
+  }
+}
+
+@media screen and (width >= 1000px) {
+  .session-page {
+    padding-left: 12.5%;
+    width: 97.5%;
+  }
+
+  footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 100px;
+    background-color: black;
+  }
+}
+
+@media screen and (width < 1000px) {
+  .session-page {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 75px;
+    background-color: black;
+  }
+
+  .side-panel {
+    position: absolute;
+    top: 0px;
+    bottom: 75px;
+    right: 0;
+    width: 50%;
+    background-color: darkslateblue;
+    z-index: 4;
+    display: flex;
+    align-items: flex-start;
+    flex-flow: column;
+    padding: 50px 20px 50px 20px;
+  }
+
+  .side-panel-background {
+    position: fixed;
+    right: 0;
+    z-index: 3;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    opacity: 0.8;
+    background-color: black;
+  }
+
+  .side-singers-list {
+    height: calc(100% - 50px);
+    display: flex;
+    flex-flow: column wrap;
+  }
+
+  .side-singers-list > p {
+    margin-right: 50px;
+  }
+}
+
+@media screen and (height < 700px) {
+  footer {
+    position: fixed;
+    bottom: 0;
+    margin-top: 15px;
+  }
+
+  .side-panel {
+    height: calc(100% - 100px);
+  }
+
+  .side-panel-background {
+    height: calc(100%);
+  }
+
+}
+
+@media screen and (max-height > 900px) {
+  .side-panel {
+    height: calc(100%);
+  }
+
+  .side-panel-background {
+    height: calc(100%);
+  }
 }
 
 .current-music, .add-music, .remove-music, .switch-music, .add-singer, .remove-singer {
@@ -17,7 +205,9 @@ body {
 }
 
 .current-music {
-  margin: 3% 0 0 3%;
+  margin-top: 3%;
+  margin-left: 3%;
+  word-wrap: break-word;
 }
 
 .add-music-button, .remove-music-button, .switch-music-button, .add-singer-button, .remove-singer-button {
@@ -28,6 +218,17 @@ body {
   height: 50%;
   border: 3px, solid, rgb(213, 206, 233);
   margin: 0 1% 0 1%;
+}
+
+.options-button {
+  justify-content: flex-end;
+  font-family: helvetica;
+  font-size: 100%;
+  color: white;
+  width: 50px;
+  height: 50%;
+  border: 3px, solid, rgb(213, 206, 233);
+  margin-left: 70%;
 }
 
 .separator {
@@ -101,43 +302,57 @@ body {
   background-color: rgb(51, 51, 51);
 }
 
-button {
-  background-color: rgb(170, 157, 207);
-  border-radius: 5px;
-}
-
-main {
-  display: flex;
-  align-items: normal;
-}
-
 .nav-buttons {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100px;
-  background-color: rgb(0, 0, 0);
+  height: 100%;
+  width: 100%;
 }
 
 .logo {
   display: flex;
-  position:absolute;
-  align-items: flex-start;
-  top: 2%;
-  left: 0.5%;
   font-size:200%;
+  margin-left: 1%;
+  width: 20%;
+  align-items: center;
   font-family: Impact;
 }
+
+/*
+Isso é um teste para caso eu quisesse alterar a logo para centralizar o texto,
+mas eu acabei preferindo ele conectado no fio.
+
+.logo-teste {
+  display: flex;
+  font-size:200%;
+  font-family: Impact;
+  align-items: center;
+}
+*/
 
 .icon {
   height: 7vh;
 }
 
 .singers-list {
-  position: relative;
+  position: absolute;
+  left: 0;
+  top: 0px;
+  height: calc(100% - 75px);
   background-color: rgb(5, 3, 27);
-  width: 15%;
-  height: 100vh;
+  width: 12.5%;
+}
+
+.singers-list > div {
+  display: flex;
+  align-items: flex-start;
+  flex-flow: column wrap;
+  height: calc(100% - 50px);
+}
+
+.singers-list > div > p {
+  margin-left: 10px;
 }
 
 button:hover {
