@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(express.json());
 app.use(express.static('public'))
 app.use(cors({
-    origin: ['https://localhost:3000', 'https://karaoke-order.vercel.app']
+    origin: ['https://localhost:3000', 'https://karaoke-order.onrender.com']
 }))
 
 //TODO: Criar um delete para deletar sessões pelo site (não sei se é necessário)
