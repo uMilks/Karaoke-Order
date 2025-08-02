@@ -41,7 +41,7 @@ export default function SessionPage() {
             try {
                 const data = {name: session_name}
                 const json_data = JSON.stringify(data)
-                const fetch_data = await fetch('/enter-session', {
+                const fetch_data = await fetch('https://karaoke-order-server.onrender.com/enter-session', {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -64,7 +64,7 @@ export default function SessionPage() {
         }
         checkSession()
         async function fetchKeys() {
-            const key_data = await fetch('/keys', {
+            const key_data = await fetch('https://karaoke-order-server.onrender.com/keys', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ export default function SessionPage() {
         try {
             const session_data = {name: session_name, singer: data, password: adminKey}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("/add-singer", {
+            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/add-singer", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -99,7 +99,7 @@ export default function SessionPage() {
         try {
             const session_data = {name: session_name, music: data}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("/add-music", {
+            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/add-music", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -121,7 +121,7 @@ export default function SessionPage() {
             let newMusics = musics.filter((value) => value != music)
             const session_data = {name: session_name, index: i, password: adminKey}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("/remove-music", {
+            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/remove-music", {
                 method: "DELETE",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -143,7 +143,7 @@ export default function SessionPage() {
             let newMusics = musics.filter((value) => value.singer != singer)
             const session_data = {name: session_name, singer: singer, password: adminKey}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("/remove-singer", {
+            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/remove-singer", {
                 method: "DELETE",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -191,7 +191,7 @@ export default function SessionPage() {
             newMusics[y] = temp
             const data = {name: session_name, x: x, y: y, password: adminKey}
             const json_data = JSON.stringify(data)
-            const fetch_data = await fetch("/switch-order", {
+            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/switch-order", {
                 method: "PATCH",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,

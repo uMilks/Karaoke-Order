@@ -13,7 +13,7 @@ export default function HomePage() {
     const enterSession = async () => {
         const data = {name: session}
         const json_data = JSON.stringify(data)
-        const fetch_data = await fetch("/enter-session", {
+        const fetch_data = await fetch("https://karaoke-order-server.onrender.com/enter-session", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -32,7 +32,7 @@ export default function HomePage() {
     const createSession = async () => {
         const data = {name: session, password: password}
         const json_data = JSON.stringify(data)
-        const fetch_data = await fetch("/create-session", {
+        const fetch_data = await fetch("https://karaoke-order-server.onrender.com/create-session", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
