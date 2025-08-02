@@ -29,7 +29,7 @@
     ]
   },
   "allowedHosts": "all",
-  "proxy": "https://karaoke-order-server.onrender.com",
+  "proxy": "https://karaoke-order-server.onrender.com;8080",
   "author": "Patrick V.L.",
   "license": "ISC",
   "description": ""
