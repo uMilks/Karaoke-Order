@@ -28,41 +28,12 @@ export default function SessionPage() {
     const [matches, setMatches] = useState(
         window.matchMedia("(min-width: 1000px)").matches
     )
+    const [update, setUpdate] = useState(true)
 
     useEffect(() => {
         window
         .matchMedia("(min-width: 1000px)")
         .addEventListener('change', e => setMatches( e.matches ));
-    }, []);
-
-    useEffect(() => {
-        // Checando se a sessão existe (para não poder acessar por url sem existir)
-        async function checkSession() {
-            try {
-                const data = {name: session_name}
-                const json_data = JSON.stringify(data)
-                const fetch_data = await fetch('https://karaoke-order-server.onrender.com/enter-session', {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: json_data,
-                })
-                const server_response = await fetch_data.json()
-                if (!server_response.session) {
-                    // Se a sessão não existir, server_response.session será null
-                    navigate("/")
-                } else {
-                    setMusics(server_response.session.musics)
-                    setSingers(server_response.session.singers)
-                }
-
-            } catch (e) {
-                console.error(e)
-                navigate("/")
-            }
-        }
-        checkSession()
         async function fetchKeys() {
             const key_data = await fetch('https://karaoke-order-server.onrender.com/keys', {
                 method: "GET",
@@ -74,7 +45,46 @@ export default function SessionPage() {
             setApiKey(keys.apiKey)
         }
         fetchKeys()
-    }, [])
+        checkSession()
+    }, []);
+
+    useEffect(() => {
+        let timer = setTimeout(() => {
+            setUpdate(true)
+        }, 10000);
+        if (update) {
+            checkSession()
+            setUpdate(false)
+        }
+
+        return () => clearTimeout(timer)
+    }, [update]);
+
+    const checkSession = async () => {
+        try {
+            const data = {name: session_name}
+            const json_data = JSON.stringify(data)
+            const fetch_data = await fetch('https://karaoke-order-server.onrender.com/enter-session', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: json_data,
+            })
+            const server_response = await fetch_data.json()
+            if (!server_response.session) {
+                // Se a sessão não existir, server_response.session será null
+                navigate("/")
+            } else {
+                setMusics(server_response.session.musics)
+                setSingers(server_response.session.singers)
+            }
+
+        } catch (e) {
+            console.error(e)
+            navigate("/")
+        }
+    }
 
     const updateSingers = async (data) => {
         try {

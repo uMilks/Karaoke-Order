@@ -9,7 +9,7 @@ import HomePage from "./pages/HomePage.jsx";
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <HomePage />
+        element: <HomePage/>
     },
     {
         path: "/session",
