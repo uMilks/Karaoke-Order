@@ -23,7 +23,7 @@ app.use(cors({
 //TODO: Criar um delete para deletar sessões pelo site (não sei se é necessário)
 
 app.get("/session", async function (req, res) {
-    const name = req.query
+    const { name } = req.query
     const session = await findSessionByName(name)
     res.status(session ? 200 : 404).send({session: session});
 })
