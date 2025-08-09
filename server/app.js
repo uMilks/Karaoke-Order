@@ -128,16 +128,17 @@ app.delete("/remove-music", async function(req, res) {
         if (password != adminKey) {
             // TODO: Pesquisar o código certo para enviar
             res.status(405).send({msg: "Senha incorreta."})
-        }
-        const target_session = await findSessionByName(target_name)
-        if (target_session) {
-            let target_music = target_session.musics[target_index]
-            let new_musics = target_session.musics.filter((value) => value != target_music)
-            target_session.musics = new_musics
-            await updateSession(target_session.name, target_session)
-            res.status(200).send({msg: 'Sucesso ao remover música.'})
         } else {
-            res.status(404).send({msg: 'Sessão não existe.'})
+            const target_session = await findSessionByName(target_name)
+            if (target_session) {
+                let target_music = target_session.musics[target_index]
+                let new_musics = target_session.musics.filter((value) => value != target_music)
+                target_session.musics = new_musics
+                await updateSession(target_session.name, target_session)
+                res.status(200).send({msg: 'Sucesso ao remover música.'})
+            } else {
+                res.status(404).send({msg: 'Sessão não existe.'})
+            }
         }
     } catch (e) {
         res.status(500).send({msg: 'Erro ao remover música.'})
