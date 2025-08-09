@@ -62,17 +62,14 @@ export default function SessionPage() {
 
     const checkSession = async () => {
         try {
-            const data = {name: session_name}
-            const json_data = JSON.stringify(data)
-            const fetch_data = await fetch('https://karaoke-order-server.onrender.com/enter-session', {
-                method: "POST",
+            const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${session_name}`, {
+                method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: json_data,
+                }
             })
             const server_response = await fetch_data.json()
-            if (!server_response.session) {
+            if (!server_response == 200) {
                 // Se a sessão não existir, server_response.session será null
                 navigate("/")
             } else {

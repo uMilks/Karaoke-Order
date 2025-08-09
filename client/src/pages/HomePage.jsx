@@ -13,15 +13,14 @@ export default function HomePage() {
     const enterSession = async () => {
         const data = {name: session}
         const json_data = JSON.stringify(data)
-        const fetch_data = await fetch("https://karaoke-order-server.onrender.com/enter-session", {
-            method: "POST",
+        const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${session}`, {
+            method: "GET",
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: json_data,
         })
         const server_response = await fetch_data.json()
-        if (server_response.session) {
+        if (server_response.status == 200) {
             navigate(`/session?name=${session}`)
         } else {
             setWarningColor('red')

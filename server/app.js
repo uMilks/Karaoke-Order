@@ -17,13 +17,13 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(express.json());
 app.use(express.static('public'))
 app.use(cors({
-    origin: ['https://localhost:3000', 'https://karaoke-order.onrender.com']
+    origin: ['https://karaoke-order.onrender.com']
 }))
 
 //TODO: Criar um delete para deletar sessões pelo site (não sei se é necessário)
 
-app.post("/enter-session", async function(req, res) {
-    const name = req.body.name;
+app.get("/session", async function (req, res) {
+    const name = req.query.name
     const session = await findSessionByName(name)
     res.status(session ? 200 : 404).send({session: session});
 })
