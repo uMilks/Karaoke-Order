@@ -9,7 +9,7 @@ import MusicButton from "../components/MusicButton/MusicButton"
 import { useState, useEffect } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
 
-export default function SessionPage() {
+export default function SessionPage(name) {
     const [apiKey, setApiKey] = useState('');
     const [adminKey, setAdminKey] = useState('');
     const [searchParams, setSearchParams] = useSearchParams();
@@ -62,13 +62,7 @@ export default function SessionPage() {
 
     const checkSession = async () => {
         try {
-            const data = {name: session_name};
-            const json_data = JSON.stringify(data);
-            const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session`, {
-                method: "POST",
-                headers: {'Content-Type': 'application/json'},
-                body: json_data
-            })
+            const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${name}`)
             const server_response = await fetch_data.json()
             if (!server_response.session) {
                 // Se a sessão não existir, server_response.session será null
