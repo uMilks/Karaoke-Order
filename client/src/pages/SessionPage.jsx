@@ -64,7 +64,7 @@ export default function SessionPage() {
         try {
             const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${session_name}`)
             const server_response = await fetch_data.json()
-            if (!server_response == 200) {
+            if (!server_response.session) {
                 // Se a sessão não existir, server_response.session será null
                 navigate("/")
             } else {

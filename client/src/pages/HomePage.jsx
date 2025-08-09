@@ -11,9 +11,9 @@ export default function HomePage() {
     const navigate = useNavigate();
 
     const enterSession = async () => {
-        const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${session}`)
+        const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/check-session?name=${session}`)
         const server_response = await fetch_data.json()
-        if (server_response.status == 200) {
+        if (server_response.session_exists) {
             navigate(`/session?name=${session}`)
         } else {
             setWarningColor('red')
