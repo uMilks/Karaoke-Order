@@ -11,14 +11,7 @@ export default function HomePage() {
     const navigate = useNavigate();
 
     const enterSession = async () => {
-        const data = {name: session}
-        const json_data = JSON.stringify(data)
-        const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${session}`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
+        const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${session}`)
         const server_response = await fetch_data.json()
         if (server_response.status == 200) {
             navigate(`/session?name=${session}`)
