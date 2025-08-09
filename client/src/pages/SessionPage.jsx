@@ -7,13 +7,12 @@ import RemoveSinger from "../components/RemoveSinger/RemoveSinger"
 import SetPassword from "../components/SetPassword/SetPassword"
 import MusicButton from "../components/MusicButton/MusicButton"
 import { useState, useEffect } from "react"
-import { useSearchParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 
 export default function SessionPage(name) {
     const [apiKey, setApiKey] = useState('');
     const [adminKey, setAdminKey] = useState('');
-    const [searchParams, setSearchParams] = useSearchParams();
-    const session_name = searchParams.get("name");
+    const session_name = useParams().name;
     const navigate = useNavigate();
     const [musics, setMusics] = useState([])
     const [singers, setSingers] = useState([])
@@ -62,7 +61,7 @@ export default function SessionPage(name) {
 
     const checkSession = async () => {
         try {
-            const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${name}`)
+            const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${session_name}`)
             const server_response = await fetch_data.json()
             if (!server_response.session) {
                 // Se a sessão não existir, server_response.session será null
