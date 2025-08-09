@@ -3,7 +3,7 @@ import { parse } from "tinyduration"
 
 export default function AddMusic({apiKey, setMusic, removeSelf, singerList, singerCheck}) {
     const [videoName, setVideoName] = useState('')
-    const [videoData, setVideoData] = useState({})
+    const [videoData, setVideoData] = useState({hidden: false})
     const [warning, setWarning] = useState('')
 
     const handleOnBlur = (e) => {
@@ -55,6 +55,11 @@ export default function AddMusic({apiKey, setMusic, removeSelf, singerList, sing
         }
     }
 
+    const handleCheckbox = (e) => {
+        setVideoData({...videoData, hidden: e.target.checked})
+
+    }
+
     // Fazer com que precise colocar o cantor e usar um useState?
     const checkValidity = () => {
         if (videoData.hasOwnProperty('title')) {
@@ -90,6 +95,7 @@ export default function AddMusic({apiKey, setMusic, removeSelf, singerList, sing
                 <label>Barra de pesquisa:</label> <input type="text" id='searchInput' onBlur={handleOnBlur} className="search-bar"/>
                 <button onClick={handleSearch}>Pesquisar</button>
                 <p>Duração: {videoData.duration ? videoData.duration : '-:--'}</p>
+                <label>Esconder Nome da Música?: </label> <input type="checkbox" onClick={handleCheckbox}></input>
                 <p style={{color: 'red'}}>{warning}</p>
                 <button onClick={checkValidity}>Confirmar</button>
             </div>
