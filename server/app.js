@@ -25,13 +25,13 @@ app.use(cors({
 app.get("/check-session", async function (req, res) {
     const name = req.query.name;
     const session = await findSessionByName(name);
-    res.status(session ? 200 : 404).send({session_exists: session ? true : false});
+    res.status(session ? 200 : 405).send({session_exists: session ? true : false});
 })
 
 app.get("/session", async function (req, res) {
     const name = req.query.name;
     const session = await findSessionByName(name);
-    res.status(session ? 200 : 404).send({session: session});
+    res.status(session ? 200 : 405).send({session: session});
 })
 
 app.post("/create-session", async function(req, res) {
