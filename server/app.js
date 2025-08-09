@@ -33,8 +33,7 @@ app.post("/create-session", async function(req, res) {
     const password = req.body.password;
     let session_exists = await findSessionByName(name) ? true : false
     if (password != adminKey) {
-        // TODO: Pesquisar qual o status correto para enviar
-        res.status(400).send({msg: 'Senha incorreta.'})
+        res.status(405).send({msg: 'Senha incorreta.'})
     } else if (session_exists){
         // TODO: Pesquisar qual o status correto para enviar
         res.status(400).send({msg: 'Sessão já existe.'})
@@ -55,10 +54,9 @@ app.get("/keys", function(req, res) {
 app.post("/add-singer", async function(req, res) {
     const data = {name: req.body.name, singer: req.body.singer, password: req.body.password}
     if (data.password != adminKey) {
-        // TODO: Pesquisar qual o status correto para enviar
-        res.status(400).send({msg:"Senha incorreta."})
-    }
-    let session = await findSessionByName(data.name)
+        res.status(405).send({msg:"Senha incorreta."})
+    } else {
+        let session = await findSessionByName(data.name)
     if (session) {
         session.singers.push(data.singer)
         try {
@@ -70,6 +68,7 @@ app.post("/add-singer", async function(req, res) {
         }
     } else {
         res.status(404).send({msg: 'Sessão não existe.'})
+    }
     }
 })
 
@@ -96,19 +95,19 @@ app.delete("/remove-singer", async function(req, res) {
         const target_singer = req.body.singer
         const password = req.body.password
         if (password != adminKey) {
-            // TODO: Pesquisar o código certo para enviar
-            res.status(400).send({msg: 'Senha incorreta.'})
-        }
-        const target_session = await findSessionByName(target_name)
-        if (target_session) {
-            let new_singers = target_session.singers.filter((value) => value != target_singer)
-            target_session.singers = new_singers
-            let new_musics = target_session.musics.filter((value) => value.singer != target_singer)
-            target_session.musics = new_musics
-            await updateSession(target_session.name, target_session)
-            res.status(200).send({msg: 'Sucesso ao remover cantor.'})
+            res.status(405).send({msg: 'Senha incorreta.'})
         } else {
-            res.status(404).send({msg: 'Sessão não existe.'})
+            const target_session = await findSessionByName(target_name)
+            if (target_session) {
+                let new_singers = target_session.singers.filter((value) => value != target_singer)
+                target_session.singers = new_singers
+                let new_musics = target_session.musics.filter((value) => value.singer != target_singer)
+                target_session.musics = new_musics
+                await updateSession(target_session.name, target_session)
+                res.status(200).send({msg: 'Sucesso ao remover cantor.'})
+            } else {
+                res.status(404).send({msg: 'Sessão não existe.'})
+            }
         }
     } catch (e) {
         res.status(500).send({msg: 'Erro ao remover cantor.'})
@@ -122,7 +121,7 @@ app.delete("/remove-music", async function(req, res) {
         const password = req.body.password
         if (password != adminKey) {
             // TODO: Pesquisar o código certo para enviar
-            res.status(400).send({msg: "Senha incorreta."})
+            res.status(405).send({msg: "Senha incorreta."})
         }
         const target_session = await findSessionByName(target_name)
         if (target_session) {
@@ -141,20 +140,25 @@ app.delete("/remove-music", async function(req, res) {
 
 app.patch("/switch-order", async function(req, res) {
     try {
-        const target_name = req.body.name
-        const x = req.body.x
-        const y = req.body.y
-        const target_session = await findSessionByName(target_name)
-        if (target_session) {
-            let new_musics = target_session.musics.map((value)=>{return value})
-            let temp = new_musics[x]
-            new_musics[x] = new_musics[y]
-            new_musics[y] = temp
-            target_session.musics = new_musics
-            await updateSession(target_session.name, target_session)
-            res.status(200).send({msg: 'Sucesso ao alterar ordem.'})
+        const password = req.body.password
+        if (password != adminKey) {
+            res.status(400).send({msg: "Senha incorreta."})
         } else {
-            res.status(404).send({msg: 'Sessão não existe.'})
+            const target_name = req.body.name
+            const x = req.body.x
+            const y = req.body.y
+            const target_session = await findSessionByName(target_name)
+            if (target_session) {
+                let new_musics = target_session.musics.map((value)=>{return value})
+                let temp = new_musics[x]
+                new_musics[x] = new_musics[y]
+                new_musics[y] = temp
+                target_session.musics = new_musics
+                await updateSession(target_session.name, target_session)
+                res.status(200).send({msg: 'Sucesso ao alterar ordem.'})
+            } else {
+                res.status(404).send({msg: 'Sessão não existe.'})
+            }
         }
     } catch (e) {
         res.status(500).send({msg: 'Erro ao alterar ordem.'})
