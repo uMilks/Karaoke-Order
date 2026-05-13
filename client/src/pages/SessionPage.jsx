@@ -7,13 +7,12 @@ import RemoveSinger from "../components/RemoveSinger/RemoveSinger"
 import SetPassword from "../components/SetPassword/SetPassword"
 import MusicButton from "../components/MusicButton/MusicButton"
 import { useState, useEffect } from "react"
-import { useSearchParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 
-export default function SessionPage() {
+export default function SessionPage(name) {
     const [apiKey, setApiKey] = useState('');
     const [adminKey, setAdminKey] = useState('');
-    const [searchParams, setSearchParams] = useSearchParams();
-    const session_name = searchParams.get("name");
+    const session_name = useParams().name;
     const navigate = useNavigate();
     const [musics, setMusics] = useState([])
     const [singers, setSingers] = useState([])
