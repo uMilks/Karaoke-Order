@@ -224,7 +224,7 @@ export default function SessionPage(name) {
     }
 
     return (
-        <div style={{minHeight:'100vh'}}>
+        <>
             {addMusic ? <AddMusic apiKey={apiKey} setMusic={updateMusics} removeSelf={() => setAddMusic(false)} singerList={singers} singerCheck={checkSingerHasMusic}/> : null}
             {removeMusic ? <RemoveMusic musicsLength={musics.length} removeMusic={removeMusicByIndex} removeSelf={() => setRemoveMusic(false)} /> : null}
             {switchMusic ? <SwitchMusic musicsLength={musics.length} switchMusic={switchMusicOrder} removeSelf={() => setSwitchMusic(false)} /> : null}
@@ -239,11 +239,11 @@ export default function SessionPage(name) {
                 <div className="nav-buttons">
                     {matches ? 
                         (<>
-                        <button onClick={() => setAddSinger(!addSinger)} className="add-singer-button">Adicionar Cantor</button>
-                        <button onClick={() => setRemoveSinger(!removeSinger)} className="remove-singer-button">Remover Cantor</button>
                         <button onClick={() => setAddMusic(!addMusic)} className="add-music-button">Adicionar Música</button>
                         <button onClick={() => setRemoveMusic(!removeMusic)} className="remove-music-button">Remover Música</button>
                         <button onClick={() => setSwitchMusic(!switchMusic)} className="switch-music-button">Alterar Ordem</button>
+                        <button onClick={() => setAddSinger(!addSinger)} className="add-singer-button">Adicionar Cantor</button>
+                        <button onClick={() => setRemoveSinger(!removeSinger)} className="remove-singer-button">Remover Cantor</button>
                         <button onClick={() => setSettingPassword(!settingPassword)} className="switch-music-button">Definir Senha</button>
                         </>)
                         : <button className="options-button" onClick={() => {setSidePanel(!sidePanel); setSingerList(false)}}>…</button>
@@ -264,19 +264,19 @@ export default function SessionPage(name) {
                     {createMusicList()}
                 </div>
                 {!matches && sidePanel ? <> <div onClick={() => {setSidePanel(false); setSingerList(false)}} className="side-panel-background"></div> <div className="side-panel">
-                    <a className="side-panel-button" onClick={() => {setAddSinger(!addSinger); setSidePanel(false)}}>Adicionar Cantor</a>
-                    <hr></hr>
-                    <a className="side-panel-button" onClick={() => {setRemoveSinger(!removeSinger); setSidePanel(false)}}>Remover Cantor</a>
-                    <hr></hr>
                     <a className="side-panel-button" onClick={() => {setAddMusic(!addMusic); setSidePanel(false)}}>Adicionar Música</a>
                     <hr></hr>
                     <a className="side-panel-button" onClick={() => {setRemoveMusic(!removeMusic); setSidePanel(false)}}>Remover Música</a>
                     <hr></hr>
                     <a className="side-panel-button" onClick={() => {setSwitchMusic(!switchMusic); setSidePanel(false)}}>Alterar Ordem</a>
                     <hr></hr>
-                    <a className="side-panel-button" onClick={() => {setSettingPassword(!settingPassword); setSidePanel(false)}}>Definir Senha</a>
-                    <hr></hr>
                     <a className="side-panel-button" onClick={() => {setSingerList(true)}}>Lista de Cantores</a>
+                    <hr></hr>
+                    <a className="side-panel-button" onClick={() => {setAddSinger(!addSinger); setSidePanel(false)}}>Adicionar Cantor</a>
+                    <hr></hr>
+                    <a className="side-panel-button" onClick={() => {setRemoveSinger(!removeSinger); setSidePanel(false)}}>Remover Cantor</a>
+                    <hr></hr>
+                    <a className="side-panel-button" onClick={() => {setSettingPassword(!settingPassword); setSidePanel(false)}}>Definir Senha</a>
                 </div> </> : null}
                 {!matches && singerList ? <>
                     <div className="side-panel">
@@ -286,8 +286,8 @@ export default function SessionPage(name) {
                         </div>
                     </div>
                 </>: null}
+                <footer></footer>
             </main>
-            <footer></footer>
-        </div>
+        </>
     )
 }

@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import 'dotenv/config'
 import { 
     getAllSessions,
     addSession,
@@ -9,16 +10,15 @@ import {
  } from "./db.js";
 
 var app = express()
-const PORT = 8080;
-const apiKey = process.env.API_KEY
-const adminKey = process.env.ADMIN_KEY
+const PORT = process.env.PORT;
+const apiKey = process.env.API_KEY;
+const adminKey = process.env.ADMIN_KEY;
+//const CORS_ORIGINS = process.env.CORS_ORIGINS.split(',');
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(express.json());
 app.use(express.static('public'))
-app.use(cors({
-    origin: ['https://karaoke-order.onrender.com']
-}))
+app.use(cors())
 
 //TODO: Criar um delete para deletar sessões pelo site (não sei se é necessário)
 
