@@ -1,5 +1,7 @@
 import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
-const uri = "mongodb+srv://karaokeorder:KaraokeOrderAtlasDB123@karaokeorder.mhacufr.mongodb.net/?retryWrites=true&w=majority&appName=KaraokeOrder";
+import 'dotenv/config'
+
+const uri = process.env.DB_URI;
 
 const client = new MongoClient(uri, {
   serverApi: {

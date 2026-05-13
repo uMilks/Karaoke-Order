@@ -14,7 +14,7 @@ export default function HomePage() {
         const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/check-session?name=${session}`)
         const server_response = await fetch_data.json()
         if (server_response.session_exists) {
-            navigate(`/session?name=${session}`)
+            navigate(`/session/${session}`)
         } else {
             setWarningColor('red')
             setWarning('Esta sessão não existe.')
@@ -85,8 +85,8 @@ export default function HomePage() {
                     {creatingSession ? createSessionDiv() : null}
                     {enteringSession ? enterSessionDiv() : null}
                 </div>
+                <footer></footer>
             </main>
-            <footer></footer>
         </div>
     )
 }
