@@ -7,12 +7,14 @@ import RemoveSinger from "../components/RemoveSinger/RemoveSinger"
 import SetPassword from "../components/SetPassword/SetPassword"
 import MusicButton from "../components/MusicButton/MusicButton"
 import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
+const API_URL = process.env.REACT_APP_API_URL
 
-export default function SessionPage(name) {
+export default function SessionPage() {
     const [apiKey, setApiKey] = useState('');
     const [adminKey, setAdminKey] = useState('');
-    const session_name = useParams().name;
+    const [searchParams, setSearchParams] = useSearchParams();
+    const session_name = searchParams.get("name");
     const navigate = useNavigate();
     const [musics, setMusics] = useState([])
     const [singers, setSingers] = useState([])
@@ -34,7 +36,7 @@ export default function SessionPage(name) {
         .matchMedia("(min-width: 1000px)")
         .addEventListener('change', e => setMatches( e.matches ));
         async function fetchKeys() {
-            const key_data = await fetch('https://karaoke-order-server.onrender.com/keys', {
+            const key_data = await fetch(`${API_URL}/keys`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -61,7 +63,7 @@ export default function SessionPage(name) {
 
     const checkSession = async () => {
         try {
-            const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${session_name}`)
+            const fetch_data = await fetch(`${API_URL}/session?name=${session_name}`)
             const server_response = await fetch_data.json()
             if (!server_response.session) {
                 // Se a sessão não existir, server_response.session será null
@@ -81,7 +83,7 @@ export default function SessionPage(name) {
         try {
             const session_data = {name: session_name, singer: data, password: adminKey}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/add-singer", {
+            const fetch_data = await fetch(`${API_URL}/add-singer`, {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -100,7 +102,7 @@ export default function SessionPage(name) {
         try {
             const session_data = {name: session_name, music: data}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/add-music", {
+            const fetch_data = await fetch(`${API_URL}/add-music`, {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -122,7 +124,7 @@ export default function SessionPage(name) {
             let newMusics = musics.filter((value) => value != music)
             const session_data = {name: session_name, index: i, password: adminKey}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/remove-music", {
+            const fetch_data = await fetch(`${API_URL}/remove-music`, {
                 method: "DELETE",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -144,7 +146,7 @@ export default function SessionPage(name) {
             let newMusics = musics.filter((value) => value.singer != singer)
             const session_data = {name: session_name, singer: singer, password: adminKey}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/remove-singer", {
+            const fetch_data = await fetch(`${API_URL}/remove-singer`, {
                 method: "DELETE",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -192,7 +194,7 @@ export default function SessionPage(name) {
             newMusics[y] = temp
             const data = {name: session_name, x: x, y: y, password: adminKey}
             const json_data = JSON.stringify(data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/switch-order", {
+            const fetch_data = await fetch(`${API_URL}/switch-order`, {
                 method: "PATCH",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,

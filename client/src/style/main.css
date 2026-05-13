@@ -89,6 +89,11 @@ hr {
   }
 }
 
+.video {
+  width: 85%;
+  height: 300px;
+}
+
 @media (width < 850px) {
 
   .session-button {
@@ -175,6 +180,9 @@ hr {
     height: calc(100%);
   }
 
+  .video {
+    height: 200px;
+  }
 }
 
 @media screen and (max-height > 900px) {
@@ -358,9 +366,4 @@ button:hover {
 .x-button {
   position:relative;
   left:95%;
-}
-
-.video {
-  width: 85%;
-  height: 300px;
 }
