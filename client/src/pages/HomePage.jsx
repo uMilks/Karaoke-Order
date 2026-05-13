@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+const API_URL = process.env.REACT_APP_API_URL
 
 export default function HomePage() {
     const [creatingSession, setCreatingSession] = useState(false)
@@ -11,10 +12,10 @@ export default function HomePage() {
     const navigate = useNavigate();
 
     const enterSession = async () => {
-        const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/check-session?name=${session}`)
+        const fetch_data = await fetch(`${API_URL}/check-session?name=${session}`)
         const server_response = await fetch_data.json()
         if (server_response.session_exists) {
-            navigate(`/session/${session}`)
+            navigate(`/session/?name=${session}`)
         } else {
             setWarningColor('red')
             setWarning('Esta sessão não existe.')
@@ -24,7 +25,7 @@ export default function HomePage() {
     const createSession = async () => {
         const data = {name: session, password: password}
         const json_data = JSON.stringify(data)
-        const fetch_data = await fetch("https://karaoke-order-server.onrender.com/create-session", {
+        const fetch_data = await fetch(`${API_URL}/create-session`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -85,8 +86,8 @@ export default function HomePage() {
                     {creatingSession ? createSessionDiv() : null}
                     {enteringSession ? enterSessionDiv() : null}
                 </div>
+                <footer></footer>
             </main>
-            <footer></footer>
         </div>
     )
 }

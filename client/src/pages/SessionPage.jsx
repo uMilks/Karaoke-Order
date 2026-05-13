@@ -7,12 +7,14 @@ import RemoveSinger from "../components/RemoveSinger/RemoveSinger"
 import SetPassword from "../components/SetPassword/SetPassword"
 import MusicButton from "../components/MusicButton/MusicButton"
 import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
+const API_URL = process.env.REACT_APP_API_URL
 
-export default function SessionPage(name) {
+export default function SessionPage() {
     const [apiKey, setApiKey] = useState('');
     const [adminKey, setAdminKey] = useState('');
-    const session_name = useParams().name;
+    const [searchParams, setSearchParams] = useSearchParams();
+    const session_name = searchParams.get("name");
     const navigate = useNavigate();
     const [musics, setMusics] = useState([])
     const [singers, setSingers] = useState([])
@@ -34,7 +36,7 @@ export default function SessionPage(name) {
         .matchMedia("(min-width: 1000px)")
         .addEventListener('change', e => setMatches( e.matches ));
         async function fetchKeys() {
-            const key_data = await fetch('https://karaoke-order-server.onrender.com/keys', {
+            const key_data = await fetch(`${API_URL}/keys`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -61,7 +63,7 @@ export default function SessionPage(name) {
 
     const checkSession = async () => {
         try {
-            const fetch_data = await fetch(`https://karaoke-order-server.onrender.com/session?name=${session_name}`)
+            const fetch_data = await fetch(`${API_URL}/session?name=${session_name}`)
             const server_response = await fetch_data.json()
             if (!server_response.session) {
                 // Se a sessão não existir, server_response.session será null
@@ -81,7 +83,7 @@ export default function SessionPage(name) {
         try {
             const session_data = {name: session_name, singer: data, password: adminKey}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/add-singer", {
+            const fetch_data = await fetch(`${API_URL}/add-singer`, {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -100,7 +102,7 @@ export default function SessionPage(name) {
         try {
             const session_data = {name: session_name, music: data}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/add-music", {
+            const fetch_data = await fetch(`${API_URL}/add-music`, {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -122,7 +124,7 @@ export default function SessionPage(name) {
             let newMusics = musics.filter((value) => value != music)
             const session_data = {name: session_name, index: i, password: adminKey}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/remove-music", {
+            const fetch_data = await fetch(`${API_URL}/remove-music`, {
                 method: "DELETE",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -144,7 +146,7 @@ export default function SessionPage(name) {
             let newMusics = musics.filter((value) => value.singer != singer)
             const session_data = {name: session_name, singer: singer, password: adminKey}
             const json_data = JSON.stringify(session_data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/remove-singer", {
+            const fetch_data = await fetch(`${API_URL}/remove-singer`, {
                 method: "DELETE",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -192,7 +194,7 @@ export default function SessionPage(name) {
             newMusics[y] = temp
             const data = {name: session_name, x: x, y: y, password: adminKey}
             const json_data = JSON.stringify(data)
-            const fetch_data = await fetch("https://karaoke-order-server.onrender.com/switch-order", {
+            const fetch_data = await fetch(`${API_URL}/switch-order`, {
                 method: "PATCH",
                 headers: {'Content-Type': 'application/json'},
                 body: json_data,
@@ -224,7 +226,7 @@ export default function SessionPage(name) {
     }
 
     return (
-        <div style={{minHeight:'100vh'}}>
+        <>
             {addMusic ? <AddMusic apiKey={apiKey} setMusic={updateMusics} removeSelf={() => setAddMusic(false)} singerList={singers} singerCheck={checkSingerHasMusic}/> : null}
             {removeMusic ? <RemoveMusic musicsLength={musics.length} removeMusic={removeMusicByIndex} removeSelf={() => setRemoveMusic(false)} /> : null}
             {switchMusic ? <SwitchMusic musicsLength={musics.length} switchMusic={switchMusicOrder} removeSelf={() => setSwitchMusic(false)} /> : null}
@@ -239,11 +241,11 @@ export default function SessionPage(name) {
                 <div className="nav-buttons">
                     {matches ? 
                         (<>
-                        <button onClick={() => setAddSinger(!addSinger)} className="add-singer-button">Adicionar Cantor</button>
-                        <button onClick={() => setRemoveSinger(!removeSinger)} className="remove-singer-button">Remover Cantor</button>
                         <button onClick={() => setAddMusic(!addMusic)} className="add-music-button">Adicionar Música</button>
                         <button onClick={() => setRemoveMusic(!removeMusic)} className="remove-music-button">Remover Música</button>
                         <button onClick={() => setSwitchMusic(!switchMusic)} className="switch-music-button">Alterar Ordem</button>
+                        <button onClick={() => setAddSinger(!addSinger)} className="add-singer-button">Adicionar Cantor</button>
+                        <button onClick={() => setRemoveSinger(!removeSinger)} className="remove-singer-button">Remover Cantor</button>
                         <button onClick={() => setSettingPassword(!settingPassword)} className="switch-music-button">Definir Senha</button>
                         </>)
                         : <button className="options-button" onClick={() => {setSidePanel(!sidePanel); setSingerList(false)}}>…</button>
@@ -264,19 +266,19 @@ export default function SessionPage(name) {
                     {createMusicList()}
                 </div>
                 {!matches && sidePanel ? <> <div onClick={() => {setSidePanel(false); setSingerList(false)}} className="side-panel-background"></div> <div className="side-panel">
-                    <a className="side-panel-button" onClick={() => {setAddSinger(!addSinger); setSidePanel(false)}}>Adicionar Cantor</a>
-                    <hr></hr>
-                    <a className="side-panel-button" onClick={() => {setRemoveSinger(!removeSinger); setSidePanel(false)}}>Remover Cantor</a>
-                    <hr></hr>
                     <a className="side-panel-button" onClick={() => {setAddMusic(!addMusic); setSidePanel(false)}}>Adicionar Música</a>
                     <hr></hr>
                     <a className="side-panel-button" onClick={() => {setRemoveMusic(!removeMusic); setSidePanel(false)}}>Remover Música</a>
                     <hr></hr>
                     <a className="side-panel-button" onClick={() => {setSwitchMusic(!switchMusic); setSidePanel(false)}}>Alterar Ordem</a>
                     <hr></hr>
-                    <a className="side-panel-button" onClick={() => {setSettingPassword(!settingPassword); setSidePanel(false)}}>Definir Senha</a>
-                    <hr></hr>
                     <a className="side-panel-button" onClick={() => {setSingerList(true)}}>Lista de Cantores</a>
+                    <hr></hr>
+                    <a className="side-panel-button" onClick={() => {setAddSinger(!addSinger); setSidePanel(false)}}>Adicionar Cantor</a>
+                    <hr></hr>
+                    <a className="side-panel-button" onClick={() => {setRemoveSinger(!removeSinger); setSidePanel(false)}}>Remover Cantor</a>
+                    <hr></hr>
+                    <a className="side-panel-button" onClick={() => {setSettingPassword(!settingPassword); setSidePanel(false)}}>Definir Senha</a>
                 </div> </> : null}
                 {!matches && singerList ? <>
                     <div className="side-panel">
@@ -286,8 +288,8 @@ export default function SessionPage(name) {
                         </div>
                     </div>
                 </>: null}
+                <footer></footer>
             </main>
-            <footer></footer>
-        </div>
+        </>
     )
 }

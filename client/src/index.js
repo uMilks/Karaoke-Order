@@ -12,7 +12,7 @@ const router = createBrowserRouter([
         element: <HomePage/>
     },
     {
-        path: `/session/:name`,
+        path: `/session`,
         element: <SessionPage/>
     },
 ])
