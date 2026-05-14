@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import FooterBar from "../components/FooterBar/FooterBar"
+
 const API_URL = process.env.REACT_APP_API_URL
 
 export default function HomePage() {
@@ -86,7 +88,7 @@ export default function HomePage() {
                     {creatingSession ? createSessionDiv() : null}
                     {enteringSession ? enterSessionDiv() : null}
                 </div>
-                <footer></footer>
+                <FooterBar/>
             </main>
         </div>
     )

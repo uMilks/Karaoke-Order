@@ -6,8 +6,10 @@ import AddSinger from "../components/AddSinger/AddSinger"
 import RemoveSinger from "../components/RemoveSinger/RemoveSinger"
 import SetPassword from "../components/SetPassword/SetPassword"
 import MusicButton from "../components/MusicButton/MusicButton"
+import FooterBar from "../components/FooterBar/FooterBar"
 import { useState, useEffect } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
+
 const API_URL = process.env.REACT_APP_API_URL
 
 export default function SessionPage() {
@@ -288,7 +290,7 @@ export default function SessionPage() {
                         </div>
                     </div>
                 </>: null}
-                <footer></footer>
+                <FooterBar/>
             </main>
         </>
     )
