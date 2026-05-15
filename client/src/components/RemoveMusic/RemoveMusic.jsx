@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-export default function RemoveMusic({musicsLength, removeMusic, removeSelf}) {
+export default function RemoveMusic({ musicsLength, removeMusic, removeSelf, token }) {
     const [musicIndex, setMusicIndex] = useState('')
     const [warning, setWarning] = useState('')
 
@@ -15,7 +15,7 @@ export default function RemoveMusic({musicsLength, removeMusic, removeSelf}) {
             if (newIndex > musicsLength || newIndex < 1 || isNaN(newIndex)) {
                 throw RangeError
             }
-            const result = await removeMusic(newIndex-1)
+            const result = await removeMusic(newIndex-1, token.username, token.admin)
             result == "Sucesso ao remover música." ? removeSelf() : setWarning(result)
         } catch (error) {
             setWarning('Insira um número válido.')

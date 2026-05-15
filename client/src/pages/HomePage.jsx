@@ -1,5 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import FooterBar from "../components/FooterBar/FooterBar"
+
 const API_URL = process.env.REACT_APP_API_URL
 
 export default function HomePage() {
@@ -9,13 +11,22 @@ export default function HomePage() {
     const [session, setSession] = useState('')
     const [warning, setWarning] = useState('')
     const [warningColor, setWarningColor] = useState('red')
+    const [TOKEN, setTOKEN] = useState();
     const navigate = useNavigate();
+
+    useEffect(()=>{
+        setTOKEN(JSON.parse(localStorage.getItem("TOKEN")));
+    }, [])
 
     const enterSession = async () => {
         const fetch_data = await fetch(`${API_URL}/check-session?name=${session}`)
         const server_response = await fetch_data.json()
         if (server_response.session_exists) {
-            navigate(`/session/?name=${session}`)
+            if (TOKEN) {
+                navigate(`/session/?name=${session}`)
+            } else {
+                navigate(`/login?redirect=${session}`)
+            }
         } else {
             setWarningColor('red')
             setWarning('Esta sessão não existe.')
@@ -76,6 +87,12 @@ export default function HomePage() {
                     <img src="../assets/mic.ico" className="icon"></img>
                     <p>Karaoke Order</p>
                 </div>
+                { TOKEN ?
+                <div style={{width:"100%", display:"flex", justifyContent: "flex-end"}}>
+                    <button className="logout-button" onClick={()=>{localStorage.removeItem("TOKEN"); setTOKEN(undefined)}}>Logout</button>
+                </div>
+                : null
+                }
             </nav>
             <main className="home-page">
                 <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
@@ -86,7 +103,7 @@ export default function HomePage() {
                     {creatingSession ? createSessionDiv() : null}
                     {enteringSession ? enterSessionDiv() : null}
                 </div>
-                <footer></footer>
+                <FooterBar/>
             </main>
         </div>
     )
