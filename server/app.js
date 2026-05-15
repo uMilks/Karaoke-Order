@@ -5,7 +5,10 @@ import {
     getAllSessions,
     addSession,
     findSessionByName,
-    updateSession
+    updateSession,
+    addUser,
+    findUserByName,
+    updateUser
  } from "./db.js";
 
 var app = express()
@@ -40,8 +43,7 @@ app.post("/create-session", async function(req, res) {
     if (password != adminKey) {
         res.status(405).send({msg: 'Senha incorreta.'})
     } else if (session_exists){
-        // TODO: Pesquisar qual o status correto para enviar
-        res.status(400).send({msg: 'Sessão já existe.'})
+        res.status(409).send({msg: 'Sessão já existe.'})
     } else {
         try {
             await addSession({name: name, musics: [], singers: []})
@@ -49,6 +51,43 @@ app.post("/create-session", async function(req, res) {
         } catch (e) {
             res.status(500).send({msg: 'Erro ao criar sessão.'})
         }
+    }
+})
+
+app.post("/create-account", async function(req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
+    const logged_into = req.body.logged_into
+    let user_exists = await findUserByName(username) ? true : false
+    if (user_exists){
+        res.status(409).send({msg: 'Usuário já existe.'})
+    } else {
+        try {
+            await addUser({username: username, password: password, admin: false, logged_into: logged_into})
+            res.status(200).send({msg: 'Sucesso ao criar usuário!', token: username})
+        } catch (e) {
+            res.status(500).send({msg: 'Erro ao criar usuário.'})
+        }
+    }
+})
+
+app.get("/user-login", async function (req, res) {
+    const username = req.query.username;
+    const password = req.query.password
+    const session = req.query.session
+    const user = await findUserByName(username);
+    if (user) {
+        if (user.password != password) {
+            res.status(401).send({msg: 'Senha incorreta.'})
+        } else {
+            let newUserData = user
+            newUserData.logged_into.push(session)
+            await updateUser(username, newUserData)
+            console.log(`Usuário ${username} logando...`)
+            res.status(200).send({msg: 'Fazendo login...', token: {username: username, admin: user.admin, logged_into: newUserData.logged_into}});
+        }
+    } else {
+        res.status(404).send({msg: 'Usuário não encontrado.'})
     }
 })
 

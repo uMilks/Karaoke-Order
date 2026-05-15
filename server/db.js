@@ -23,6 +23,7 @@ run().catch(console.dir);
 
 export let db = client.db('todoapp');
 const sessionsCollection = db.collection('sessions');
+const usersCollection = db.collection('users');
 
 export async function getAllSessions() {
   try {
@@ -66,6 +67,42 @@ export async function updateSession(name, data) {
     }
   } catch (err) {
     console.error(`Erro ao dar update na sessão '${name}':`, err);
+    return { success: false, error: err.message };
+  }
+}
+
+export async function addUser(data) {
+  try {
+    const result = await usersCollection.insertOne(data);
+    return { success: true, insertedId: result.insertedId };
+  } catch (err) {
+    console.error('Erro ao adicionar usuário:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+export async function findUserByName(name) {
+  try {
+    const session = await usersCollection.findOne({username: name});
+    return session;
+  } catch (err) {
+    console.error(`Erro ao procurar o usuário '${name}':`, err);
+    return null;
+  }
+}
+
+export async function updateUser(name, data) {
+  try {
+    const result = await usersCollection.updateOne(
+      {username: name},
+      {$set: data}
+    );
+    if (result.modifiedCount > 0){
+      return {success: true, modifiedCount: result.modifiedCount};
+    } else {throw new Error(`Usuário não foi modificado.`)
+    }
+  } catch (err) {
+    console.error(`Erro ao dar update no usuário '${name}':`, err);
     return { success: false, error: err.message };
   }
 }

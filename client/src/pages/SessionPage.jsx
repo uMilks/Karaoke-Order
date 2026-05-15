@@ -32,6 +32,13 @@ export default function SessionPage() {
         window.matchMedia("(min-width: 1000px)").matches
     )
     const [update, setUpdate] = useState(true)
+    const TOKEN = localStorage.getItem("TOKEN")
+
+    useEffect(()=>{
+        if (!TOKEN) {
+            navigate(`/login?redirect=${session_name}`)
+        }
+    }, [TOKEN])
 
     useEffect(() => {
         window

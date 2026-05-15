@@ -12,12 +12,17 @@ export default function HomePage() {
     const [warning, setWarning] = useState('')
     const [warningColor, setWarningColor] = useState('red')
     const navigate = useNavigate();
+    const TOKEN = localStorage.getItem("TOKEN")
 
     const enterSession = async () => {
         const fetch_data = await fetch(`${API_URL}/check-session?name=${session}`)
         const server_response = await fetch_data.json()
         if (server_response.session_exists) {
-            navigate(`/session/?name=${session}`)
+            if (TOKEN) {
+                navigate(`/session/?name=${session}`)
+            } else {
+                navigate(`/login?redirect=${session}`)
+            }
         } else {
             setWarningColor('red')
             setWarning('Esta sessão não existe.')
@@ -77,6 +82,9 @@ export default function HomePage() {
                 <div className="logo">
                     <img src="../assets/mic.ico" className="icon"></img>
                     <p>Karaoke Order</p>
+                </div>
+                <div style={{width:"100%", display:"flex", justifyContent: "flex-end"}}>
+                    <button className="logout-button" onClick={()=>{localStorage.removeItem("TOKEN")}}>Logout</button>
                 </div>
             </nav>
             <main className="home-page">

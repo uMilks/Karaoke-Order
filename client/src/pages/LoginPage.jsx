@@ -1,35 +1,43 @@
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import LoginBoard from "../components/LoginBoard/LoginBoard"
+import CreateAccountBoard from "../components/CreateAccountBoard/CreateAccountBoard"
 import FooterBar from "../components/FooterBar/FooterBar"
 
-const API_URL = process.env.REACT_APP_API_URL
-
-export default function LoginPage(session_name) {
+export default function LoginPage() {
     const navigate = useNavigate();
+    const [logging, setLogging] = useState(true);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const session_name = searchParams.get("redirect");
     const TOKEN = localStorage.getItem("TOKEN")
-    useEffect(()=>{
-        if (TOKEN) {
-            navigate(`/session/?name=${session_name}`)
+
+    const navigate_login = (token, session) => {
+        if (token) {
+            if (session != "") {
+                navigate(`/session/?name=${session}`);
+            } else {
+                navigate("/");
+            }
         }
+    }
+
+    useEffect(()=>{
+        navigate_login(TOKEN, session_name);
     }, [TOKEN])
 
     return (
         <div style={{height: '100vh'}}>
             <nav>
-                <div className="logo">
+                <div className="logo" onClick={() => {navigate("/")}}>
                     <img src="../assets/mic.ico" className="icon"></img>
                     <p>Karaoke Order</p>
                 </div>
             </nav>
-            <main className="home-page">
-                <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
-                    <button className="session-button" onClick={()=>{setCreatingSession(true); setEnteringSession(false); setWarning('')}}>Criar Sessão</button>
-                    <button className="session-button" onClick={()=>{setCreatingSession(false); setEnteringSession(true); setWarning('')}}>Entrar em Sessão</button>
-                </div>
-                <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
-                    {creatingSession ? createSessionDiv() : null}
-                    {enteringSession ? enterSessionDiv() : null}
-                </div>
+            <main className="login-page">
+                {logging ? 
+                <LoginBoard switchState={()=>{setLogging(false)}} navigate_to_session={navigate_login} session={session_name} />
+                : 
+                <CreateAccountBoard switchState={()=>{setLogging(true)}} navigate_to_session={navigate_login} session={session_name} />}
                 <FooterBar/>
             </main>
         </div>
