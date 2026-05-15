@@ -32,13 +32,17 @@ export default function SessionPage() {
         window.matchMedia("(min-width: 1000px)").matches
     )
     const [update, setUpdate] = useState(true)
-    const TOKEN = localStorage.getItem("TOKEN")
+    const [TOKEN, setTOKEN] = useState();
 
-    useEffect(()=>{
-        if (!TOKEN) {
-            navigate(`/login?redirect=${session_name}`)
+    useEffect(() => {
+        let newToken = JSON.parse(localStorage.getItem("TOKEN"))
+        setTOKEN(newToken);
+        if (!newToken) {
+            navigate(`/login?redirect=${session_name}`);
+        } else if (newToken.logged_into.indexOf(session_name) == -1) {
+            navigate(`/login?redirect=${session_name}`);
         }
-    }, [TOKEN])
+    }, [])
 
     useEffect(() => {
         window
@@ -60,7 +64,7 @@ export default function SessionPage() {
 
     useEffect(() => {
         let timer = setTimeout(() => {
-            setUpdate(true)
+            setUpdate(true);
         }, 10000);
         if (update) {
             checkSession()
@@ -80,6 +84,11 @@ export default function SessionPage() {
             } else {
                 setMusics(server_response.session.musics)
                 setSingers(server_response.session.singers)
+                let newToken = JSON.parse(localStorage.getItem("TOKEN"));
+                if (!server_response.session.singers.includes(newToken.username) && newToken.logged_into.includes(session_name)) {
+                    console.log("Inserindo cantor: ", newToken.username)
+                    await updateSingers(newToken.username);
+                }
             }
 
         } catch (e) {
@@ -90,7 +99,7 @@ export default function SessionPage() {
 
     const updateSingers = async (data) => {
         try {
-            const session_data = {name: session_name, singer: data, password: adminKey}
+            const session_data = {name: session_name, singer: data}
             const json_data = JSON.stringify(session_data)
             const fetch_data = await fetch(`${API_URL}/add-singer`, {
                 method: "POST",
@@ -127,11 +136,11 @@ export default function SessionPage() {
             console.error(e)
         }
     }
-    const removeMusicByIndex = async (i) => {
+    const removeMusicByIndex = async (i, username, admin) => {
         try {
             let music = musics[i]
             let newMusics = musics.filter((value) => value != music)
-            const session_data = {name: session_name, index: i, password: adminKey}
+            const session_data = {name: session_name, index: i, username: username, admin: admin}
             const json_data = JSON.stringify(session_data)
             const fetch_data = await fetch(`${API_URL}/remove-music`, {
                 method: "DELETE",
@@ -153,7 +162,7 @@ export default function SessionPage() {
         try {
             let newSingers = singers.filter((value) => value != singer)
             let newMusics = musics.filter((value) => value.singer != singer)
-            const session_data = {name: session_name, singer: singer, password: adminKey}
+            const session_data = {name: session_name, singer: singer}
             const json_data = JSON.stringify(session_data)
             const fetch_data = await fetch(`${API_URL}/remove-singer`, {
                 method: "DELETE",
@@ -234,14 +243,27 @@ export default function SessionPage() {
         return singerList
     }
 
+    const logOut = async () => {
+        removeSingerbyName(TOKEN.username);
+        const fetch_data = await fetch(`${API_URL}/user-logout?username=${TOKEN.username}&session=${session_name}`, {
+            method: 'PATCH'
+        });
+        const server_response = await fetch_data.json();
+        if (server_response.msg == "Deslogando...") {
+            console.log("AA")
+            let newToken = JSON.stringify(server_response.token);
+            console.log(server_response.token, newToken)
+            setTOKEN(newToken);
+            localStorage.setItem("TOKEN", newToken);
+        }
+        navigate(`/login?redirect=${session_name}`);
+    }
+
     return (
         <>
-            {addMusic ? <AddMusic apiKey={apiKey} setMusic={updateMusics} removeSelf={() => setAddMusic(false)} singerList={singers} singerCheck={checkSingerHasMusic}/> : null}
-            {removeMusic ? <RemoveMusic musicsLength={musics.length} removeMusic={removeMusicByIndex} removeSelf={() => setRemoveMusic(false)} /> : null}
-            {switchMusic ? <SwitchMusic musicsLength={musics.length} switchMusic={switchMusicOrder} removeSelf={() => setSwitchMusic(false)} /> : null}
-            {addSinger ? <AddSinger singerList={singers} setSinger={updateSingers} removeSelf={() => setAddSinger(false)}/> : null}
-            {removeSinger ? <RemoveSinger singerList={singers} removeSinger={removeSingerbyName} removeSelf={() => setRemoveSinger(false)}/> : null}
-            {settingPassword ? <SetPassword sendPassword={setAdminKey} removeSelf={() => setSettingPassword(false)} /> : null}
+            {addMusic ? <AddMusic apiKey={apiKey} setMusic={updateMusics} removeSelf={() => setAddMusic(false)} singerList={singers} singerCheck={checkSingerHasMusic} token={TOKEN} /> : null}
+            {removeMusic ? <RemoveMusic musicsLength={musics.length} removeMusic={removeMusicByIndex} removeSelf={() => setRemoveMusic(false)} token={TOKEN} /> : null}
+            {switchMusic ? <SwitchMusic musicsLength={musics.length} switchMusic={switchMusicOrder} removeSelf={() => setSwitchMusic(false)} token={TOKEN} /> : null}
             <nav>
                 <div className="logo" onClick={() => {navigate("/")}}>
                     <img src="../assets/mic.ico" className="icon"></img>
@@ -253,9 +275,7 @@ export default function SessionPage() {
                         <button onClick={() => setAddMusic(!addMusic)} className="add-music-button">Adicionar Música</button>
                         <button onClick={() => setRemoveMusic(!removeMusic)} className="remove-music-button">Remover Música</button>
                         <button onClick={() => setSwitchMusic(!switchMusic)} className="switch-music-button">Alterar Ordem</button>
-                        <button onClick={() => setAddSinger(!addSinger)} className="add-singer-button">Adicionar Cantor</button>
-                        <button onClick={() => setRemoveSinger(!removeSinger)} className="remove-singer-button">Remover Cantor</button>
-                        <button onClick={() => setSettingPassword(!settingPassword)} className="switch-music-button">Definir Senha</button>
+                        <button onClick={logOut} className="switch-music-button">Logout</button>
                         </>)
                         : <button className="options-button" onClick={() => {setSidePanel(!sidePanel); setSingerList(false)}}>…</button>
                     }
@@ -270,7 +290,7 @@ export default function SessionPage() {
                         </div>
                     </div>
                 : null}
-                <CurrentMusic videoData={musics[0] ? musics[0] : {}} removeMusic={() => removeMusicByIndex(0)}></CurrentMusic>
+                <CurrentMusic videoData={musics[0] ? musics[0] : {}} removeMusic={() => removeMusicByIndex(0, TOKEN.username, TOKEN.admin)}></CurrentMusic>
                 <div className="music-list">
                     {createMusicList()}
                 </div>
@@ -283,11 +303,7 @@ export default function SessionPage() {
                     <hr></hr>
                     <a className="side-panel-button" onClick={() => {setSingerList(true)}}>Lista de Cantores</a>
                     <hr></hr>
-                    <a className="side-panel-button" onClick={() => {setAddSinger(!addSinger); setSidePanel(false)}}>Adicionar Cantor</a>
-                    <hr></hr>
-                    <a className="side-panel-button" onClick={() => {setRemoveSinger(!removeSinger); setSidePanel(false)}}>Remover Cantor</a>
-                    <hr></hr>
-                    <a className="side-panel-button" onClick={() => {setSettingPassword(!settingPassword); setSidePanel(false)}}>Definir Senha</a>
+                    <a className="side-panel-button" onClick={logOut}>Logout</a>
                 </div> </> : null}
                 {!matches && singerList ? <>
                     <div className="side-panel">

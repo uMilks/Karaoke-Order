@@ -9,12 +9,14 @@ export default function LoginPage() {
     const [logging, setLogging] = useState(true);
     const [searchParams, setSearchParams] = useSearchParams();
     const session_name = searchParams.get("redirect");
-    const TOKEN = localStorage.getItem("TOKEN")
+    const TOKEN = JSON.parse(localStorage.getItem("TOKEN"));
 
     const navigate_login = (token, session) => {
         if (token) {
             if (session != "") {
-                navigate(`/session/?name=${session}`);
+                if (token.logged_into.indexOf(session_name) > -1) {
+                    navigate(`/session/?name=${session}`);
+                }
             } else {
                 navigate("/");
             }
@@ -23,7 +25,7 @@ export default function LoginPage() {
 
     useEffect(()=>{
         navigate_login(TOKEN, session_name);
-    }, [TOKEN])
+    }, [])
 
     return (
         <div style={{height: '100vh'}}>

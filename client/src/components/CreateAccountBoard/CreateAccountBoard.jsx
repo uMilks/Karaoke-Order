@@ -32,7 +32,7 @@ export default function CreateAccountBoard({ switchState, navigate_to_session, s
             })
             const serverResponse = await data_register.json();
             if (serverResponse.token) {
-                localStorage.setItem("TOKEN", serverResponse.token)
+                localStorage.setItem("TOKEN", JSON.stringify(serverResponse.token));
                 navigate_to_session(serverResponse.token, session)
             } else if (serverResponse.status == 409){
                 setWarning("Usuário já existe.");

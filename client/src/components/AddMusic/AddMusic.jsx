@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { parse } from "tinyduration"
 
-export default function AddMusic({apiKey, setMusic, removeSelf, singerList, singerCheck}) {
+export default function AddMusic({ apiKey, setMusic, removeSelf, singerList, singerCheck, token }) {
     const [videoName, setVideoName] = useState('')
-    const [videoData, setVideoData] = useState({hidden: false})
+    const [videoData, setVideoData] = useState({hidden: false, singer: token.username})
     const [warning, setWarning] = useState('')
 
     const handleOnBlur = (e) => {
@@ -89,9 +89,6 @@ export default function AddMusic({apiKey, setMusic, removeSelf, singerList, sing
                     src={`https://youtube.com/embed/${videoData.id ? videoData.id : ''}?autoplay=0`}>
                 </iframe>
                 <hr className="separator"></hr>
-                <label>Cantor:</label> <select id="singers" onBlur={handleSinger}>
-                    {createOptions()}
-                </select> <br></br> <br></br>
                 <label>Barra de pesquisa:</label> <input type="text" id='searchInput' onBlur={handleOnBlur} className="search-bar"/>
                 <button onClick={handleSearch}>Pesquisar</button>
                 <p>Duração: {videoData.duration ? videoData.duration : '-:--'}</p>

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import FooterBar from "../components/FooterBar/FooterBar"
 
@@ -11,8 +11,12 @@ export default function HomePage() {
     const [session, setSession] = useState('')
     const [warning, setWarning] = useState('')
     const [warningColor, setWarningColor] = useState('red')
+    const [TOKEN, setTOKEN] = useState();
     const navigate = useNavigate();
-    const TOKEN = localStorage.getItem("TOKEN")
+
+    useEffect(()=>{
+        setTOKEN(JSON.parse(localStorage.getItem("TOKEN")));
+    }, [])
 
     const enterSession = async () => {
         const fetch_data = await fetch(`${API_URL}/check-session?name=${session}`)
@@ -83,9 +87,12 @@ export default function HomePage() {
                     <img src="../assets/mic.ico" className="icon"></img>
                     <p>Karaoke Order</p>
                 </div>
+                { TOKEN ?
                 <div style={{width:"100%", display:"flex", justifyContent: "flex-end"}}>
-                    <button className="logout-button" onClick={()=>{localStorage.removeItem("TOKEN")}}>Logout</button>
+                    <button className="logout-button" onClick={()=>{localStorage.removeItem("TOKEN"); setTOKEN(undefined)}}>Logout</button>
                 </div>
+                : null
+                }
             </nav>
             <main className="home-page">
                 <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>

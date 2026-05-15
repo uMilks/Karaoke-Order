@@ -64,7 +64,7 @@ app.post("/create-account", async function(req, res) {
     } else {
         try {
             await addUser({username: username, password: password, admin: false, logged_into: logged_into})
-            res.status(200).send({msg: 'Sucesso ao criar usuário!', token: username})
+            res.status(200).send({msg: 'Sucesso ao criar usuário!', token: {username:username, admin: false, logged_into: logged_into}})
         } catch (e) {
             res.status(500).send({msg: 'Erro ao criar usuário.'})
         }
@@ -81,10 +81,33 @@ app.get("/user-login", async function (req, res) {
             res.status(401).send({msg: 'Senha incorreta.'})
         } else {
             let newUserData = user
-            newUserData.logged_into.push(session)
-            await updateUser(username, newUserData)
+            if (user.logged_into.indexOf(session) == -1) {
+                newUserData.logged_into.push(session)
+                await updateUser(username, newUserData)
+            }
             console.log(`Usuário ${username} logando...`)
             res.status(200).send({msg: 'Fazendo login...', token: {username: username, admin: user.admin, logged_into: newUserData.logged_into}});
+        }
+    } else {
+        res.status(404).send({msg: 'Usuário não encontrado.'})
+    }
+})
+
+app.patch("/user-logout", async function (req, res) {
+    const username = req.query.username;
+    const session = req.query.session;
+    const user = await findUserByName(username);
+    if (user) {
+        let newUserData = user;
+        let session_index = user.logged_into.indexOf(session);
+        if (session_index > -1) {
+            newUserData.logged_into.splice(session_index, 1)
+            await updateUser(username, newUserData)
+            console.log(`Usuário ${username} deslogando da sessão ${session}...`)
+            console.log(newUserData.logged_into)
+            res.status(200).send({msg: 'Deslogando...', token: {username: username, admin: user.admin, logged_into: newUserData.logged_into}});
+        } else {
+            res.status(404).send({msg: 'Usuário não estava logado nesta sessão.'})
         }
     } else {
         res.status(404).send({msg: 'Usuário não encontrado.'})
@@ -96,23 +119,23 @@ app.get("/keys", function(req, res) {
 })
 
 app.post("/add-singer", async function(req, res) {
-    const data = {name: req.body.name, singer: req.body.singer, password: req.body.password}
-    if (data.password != adminKey) {
-        res.status(405).send({msg:"Senha incorreta."})
-    } else {
+    const data = {name: req.body.name, singer: req.body.singer}
         let session = await findSessionByName(data.name)
     if (session) {
-        session.singers.push(data.singer)
-        try {
-            await updateSession(session.name, session)
-            res.status(200).send({msg: 'Sucesso ao adicionar cantor.'})
-        } catch (e) {
-            console.error("Erro ao adicionar cantor na sessão: " + data.name)
-            res.status(500).send({msg: "Erro ao adicionar cantor."})
+        if (session.singers.includes(data.singer)) {
+            res.status(409).send({msg: "Cantor já existe."});
+        } else {
+            session.singers.push(data.singer)
+            try {
+                await updateSession(session.name, session)
+                res.status(200).send({msg: 'Sucesso ao adicionar cantor.'})
+            } catch (e) {
+                console.error("Erro ao adicionar cantor na sessão: " + data.name)
+                res.status(500).send({msg: "Erro ao adicionar cantor."})
+            }
         }
     } else {
         res.status(404).send({msg: 'Sessão não existe.'})
-    }
     }
 })
 
@@ -137,21 +160,16 @@ app.delete("/remove-singer", async function(req, res) {
     try {
         const target_name = req.body.name
         const target_singer = req.body.singer
-        const password = req.body.password
-        if (password != adminKey) {
-            res.status(405).send({msg: 'Senha incorreta.'})
+        const target_session = await findSessionByName(target_name)
+        if (target_session) {
+            let new_singers = target_session.singers.filter((value) => value != target_singer)
+            target_session.singers = new_singers
+            let new_musics = target_session.musics.filter((value) => value.singer != target_singer)
+            target_session.musics = new_musics
+            await updateSession(target_session.name, target_session)
+            res.status(200).send({msg: 'Sucesso ao remover cantor.'})
         } else {
-            const target_session = await findSessionByName(target_name)
-            if (target_session) {
-                let new_singers = target_session.singers.filter((value) => value != target_singer)
-                target_session.singers = new_singers
-                let new_musics = target_session.musics.filter((value) => value.singer != target_singer)
-                target_session.musics = new_musics
-                await updateSession(target_session.name, target_session)
-                res.status(200).send({msg: 'Sucesso ao remover cantor.'})
-            } else {
-                res.status(404).send({msg: 'Sessão não existe.'})
-            }
+            res.status(404).send({msg: 'Sessão não existe.'})
         }
     } catch (e) {
         res.status(500).send({msg: 'Erro ao remover cantor.'})
@@ -162,21 +180,23 @@ app.delete("/remove-music", async function(req, res) {
     try {
         const target_name = req.body.name
         const target_index = req.body.index
-        const password = req.body.password
-        if (password != adminKey) {
-            // TODO: Pesquisar o código certo para enviar
-            res.status(405).send({msg: "Senha incorreta."})
-        } else {
-            const target_session = await findSessionByName(target_name)
-            if (target_session) {
-                let target_music = target_session.musics[target_index]
+        const username = req.body.username
+        const admin = req.body.admin
+        const target_session = await findSessionByName(target_name)
+        if (target_session) {
+            let target_music = target_session.musics[target_index]
+            if (target_music.singer != username) {
+                if (!admin) {
+                    res.status(405).send({msg: "Música não pertence ao usuário logado."})
+                }
+            } else {
                 let new_musics = target_session.musics.filter((value) => value != target_music)
                 target_session.musics = new_musics
                 await updateSession(target_session.name, target_session)
                 res.status(200).send({msg: 'Sucesso ao remover música.'})
-            } else {
-                res.status(404).send({msg: 'Sessão não existe.'})
             }
+        } else {
+            res.status(404).send({msg: 'Sessão não existe.'})
         }
     } catch (e) {
         res.status(500).send({msg: 'Erro ao remover música.'})
@@ -185,9 +205,9 @@ app.delete("/remove-music", async function(req, res) {
 
 app.patch("/switch-order", async function(req, res) {
     try {
-        const password = req.body.password
-        if (password != adminKey) {
-            res.status(400).send({msg: "Senha incorreta."})
+        const admin = req.body.admin
+        if (!admin) {
+            res.status(405).send({msg: "Usuário não é admin."})
         } else {
             const target_name = req.body.name
             const x = req.body.x

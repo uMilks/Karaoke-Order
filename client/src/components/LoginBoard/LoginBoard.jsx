@@ -28,7 +28,7 @@ export default function LoginBoard({ switchState, navigate_to_session, session }
             let data_register = await fetch(`${API_URL}/user-login?username=${loginData.username}&password=${loginData.password}&session=${session}`)
             const serverResponse = await data_register.json();
             if (serverResponse.token) {
-                localStorage.setItem("TOKEN", serverResponse.token)
+                localStorage.setItem("TOKEN", JSON.stringify(serverResponse.token));
                 navigate_to_session(serverResponse.token, session)
             } else {
                 setWarning("Usuário ou senha incorretos.")
