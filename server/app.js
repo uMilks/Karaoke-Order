@@ -185,10 +185,9 @@ app.delete("/remove-music", async function(req, res) {
         const target_session = await findSessionByName(target_name)
         if (target_session) {
             let target_music = target_session.musics[target_index]
-            if (target_music.singer != username) {
-                if (!admin) {
-                    res.status(405).send({msg: "Música não pertence ao usuário logado."})
-                }
+            if (!admin && target_music.singer != username) {
+                res.status(405).send({msg: "Música não pertence ao usuário logado."})
+                console.error(`Música não pertence ao usuário logado ${target_music.singer}, mas sim ao usuário ${username}.`)
             } else {
                 let new_musics = target_session.musics.filter((value) => value != target_music)
                 target_session.musics = new_musics
